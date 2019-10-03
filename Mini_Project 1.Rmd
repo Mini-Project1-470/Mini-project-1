@@ -19,17 +19,39 @@ pop <- read.csv("population_total.csv")
 
 ```
 
+```{r}
+library(gapminder)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+```
+
 
 ## 1.GDP and life expectancy in 2018
 ```{r}
+life_2018 <- life[, c(1,220)]
+income_2018 <- income[, c(1,220)]
+total_2018 <- merge(life_2018, income_2018, by = "country")
+colnames(total_2018) <- c("country", "lifeExp", "gdpPercap")
+country_2018 <- gapminder[, c(1,2)]
+newcountry_2018 <- distinct(country_2018, country, .keep_all = TRUE)
+new_2018 <- merge(total_2018, newcountry_2018, by = "country")
+```
 
 
+```{r}
+ggplot(new_2018, aes(x = gdpPercap, y = lifeExp, col = continent)) + geom_point() + facet_wrap(continent ~ .)
 
 ```
 
 
+
+
 ## 2.Life expectancy over time by continent
 ```{r}
+
+
+
 
 ```
 
