@@ -1,0 +1,42 @@
+---
+title: "Mini_Project"
+author: "Xindi Lu"
+date: "October 2, 2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+life <- read.csv("life_expectancy_years.csv")
+
+income <- read.csv("income_per_person_gdppercapita_ppp_inflation_adjusted.csv")
+
+pop <- read.csv("population_total.csv")
+
+```
+
+
+## 1.GDP and life expectancy in 2018
+```{r}
+
+
+
+```
+
+
+## 2.Life expectancy over time by continent
+```{r}
+
+```
+
+
+
+##3.Changes in the relationship between GDP and life expectancy over time
+```{r}
+
+```
+
