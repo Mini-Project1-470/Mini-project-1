@@ -49,6 +49,12 @@ ggplot(new_2018, aes(x = gdpPercap, y = lifeExp, col = continent)) + geom_point(
 
 ## 2.Life expectancy over time by continent
 ```{r}
+ww2_lf <- life[c(1:187),c(1,141:220)]
+
+ww2 <- merge(ww2_lf, newcountry_2018, by = "country")
+
+
+
 
 
 
