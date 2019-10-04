@@ -35,31 +35,45 @@ lifeExpectancy_cc <- merge(country_continent, lifeExpectancy, by = 'country')
 GDPpercapita_cc <- merge(country_continent, GDPpercapita, by = 'country')
 dataset1 <- data.frame(GDPpercapita_cc_2018 = GDPpercapita_cc$`2018`, lifeExpectancy_cc_2018 = lifeExpectancy_cc$`2018`,
                       country = GDPpercapita_cc$country, continent = GDPpercapita_cc$continent)
-#ggplot(dataset1, aes(x = GDPpercapita_cc_2018, y = lifeExpectancy_cc_2018)) + geom_point() + geom_smooth(method = 'gam', formula = y ~ sqrt(x), se = FALSE)
 
-ggplot(dataset1, aes(x = GDPpercapita_cc_2018, y = lifeExpectancy_cc_2018)) + geom_point() + facet_wrap(~ continent)  + geom_smooth(method = 'gam', formula = y ~ sqrt(x), se = FALSE)
+ggplot(dataset1, aes(x = GDPpercapita_cc_2018, y = lifeExpectancy_cc_2018)) + geom_point() + facet_wrap(~ continent)  + geom_smooth(method = 'gam', formula = y ~ sqrt(x), se = FALSE) + ggtitle("Life expectancy vary with GDP per capital in 2018 in each continent") + labs(x = "GDP per capital", y = "Life Expectancy")
 
 ```
+
+From the graph, we can see that the trends between life expectancy and GDP per capital could not be described as a simple liner model, instead, it maybe some complicated model. \n
+It's obvious that the pattern for every continent is different. Continents such as Africa and Oceania are quite different than others. For continents of Americas, Asia, and Europe, they tend to have a positive realtionship between life expectancy and GDP per capital, starting from around age 70. For the Africa, life expecatancy starting from 60, has a very sharp slope with GDP per capital. However, because Africa has much lower GDP values, then the curve of Africa is also shorter than other continents. For Oceania, we only get two observations, therefore, the curve may not be accurate enough to describe the relationship between life expectancy and GDP per capital in Oceania. 
 
 
 
 ## 2.Life expectancy over time by continent
-```{r}
+
+```{r echo = FALSE}
 population <- read.csv("population_total.csv")
 colnames(population) <- c("country", 1800:2100)
 population_cc <- merge(country_continent, population, by = 'country')
 population_cc_gather <- population_cc %>% gather(key = "year", value = "population", -c(country, continent)) %>% 
                                           filter(year <= 2018) 
+population_by_continent <- population_cc_gather  %>% filter(year >= 1939) %>% group_by(continent, year) %>% 
+                                                     summarise(pop.by.continent = sum(as.numeric(population)))
 ```
 
 ```{r echo = FALSE}
 dataset3 <- gather(lifeExpectancy_cc, key = "year", "lifeExpectancy", -c(country, continent))
 
-average_lifeExpectancy_continent_year <- dataset3 %>% filter(year >= 1939) %>% group_by(continent, year) %>% 
-                                                           summarise(averageLifeExpectancy = mean(lifeExpectancy))
-ggplot(average_lifeExpectancy_continent_year, aes(x = year, y = averageLifeExpectancy, group = continent, color = continent)) + geom_line()+ scale_x_discrete(breaks = seq(1950, 2020, by = 10))
+dataset4 <- cbind(dataset3, population_cc_gather)[, -7] %>% filter(year >= 1939)
+dataset4$prod.lifeExp.pop <- dataset4$lifeExpectancy * dataset4$population
+
+weighted_average_lifeExpectancy_continent_year <- dataset4 %>% filter(year >= 1939) %>% group_by(continent, year) %>% 
+                                                           summarise(sum.prod.LE.pop = sum(prod.lifeExp.pop))
+weighted_average_lifeExpectancy_continent_year$weighted_average_LE_pop <- weighted_average_lifeExpectancy_continent_year$sum.prod.LE.pop / population_by_continent$pop.by.continent
+
+ggplot(weighted_average_lifeExpectancy_continent_year, aes(x = year, y = weighted_average_LE_pop, group = continent, 
+                                                           color = continent)) + 
+                                                     geom_line() + scale_x_discrete(breaks = seq(1940, 2020, by = 10)) + ggtitle("Average life expectancy changes by years in each continent \nsince World War 2 ") + labs(x = "Year", y="Average Life Expectancy(weighted)")
 ```
 
+The average life expectancy changed since WorldWar2 in each continent is a lot. For the Africa continent, its life expectancy starts at 35 in the year 1939 which is the one of the lowest. And the tendency of life expectancy changed since WW2 is increased until the 1990. Then there is something happened to Africa, so the life expectancy drops a little bit. But it starts raising at 2000 again, to the highest point of itself at 61. For the Americans, its life expectancy starts at 54 at year 1930 which is the middle position within the five continents. Then it keeps an increasing tendency all the way until the 2018 to the highest point of itself on 77. For the Asia, its life expectancy starts at around 34 in year 1939 which also the one of the lowest. Then it drops a little in the year 1940 and then starts raising up at 1943 until the year 1958, it starts drop again until 1960 around age 41. But after the years 1960, Asia starts a continuing increasing tendency that all the way to the 2018 to the highest point of itself around age 74. For the Europe its life expectancy starts at age 56, then it drops utile 1943 same period with Asia, after 1943 it keeps increasing until 2018 reach the age 81. For the Oceania, it starts at age 76 which is the highest within five continents. And it appears a continuing increasing tendency until 2018 reaches the highest age with five continents around age 83. \n
+Yes, there’s several continents caught up to others, Asia is a typical example, and Europe after 1943 caught up to others as well. Since we weighted average life expectancy, so it is more general for continents that caught up to others. The linear change of the continents is only Oceania, Americas and Africa(kinda). Oceania is kind of flat, Americas faster than Oceania, so does Africa. Asia and Europe show an increase as general, but not kind of linear. And Asia seems a little faster than Europe. The period between 1939 to 1950 have a dramatically change for both Asia and Europe. And this period is the WW2 period. The main battleground of the WW2 is on the Asia, and the Europe as a main invaders so these may be the main reasons that has faster change. 
 
 
 ##3.Changes in the relationship between GDP and life expectancy over time
@@ -70,8 +84,7 @@ GDPpercapita_cc_upto2018 <- subset(GDPpercapita_cc, select = country:`2018`)
 dataset5 <- gather(GDPpercapita_cc_upto2018, key = "year", value = "GDPpercapita", -c(country, continent))
 average_GDPpercapita_continent_year <- dataset5 %>% filter(year >= 1939) %>% group_by(continent, year) %>% 
                                                            summarise(averageGDPpercapita = mean(GDPpercapita))
-dataset6 <- cbind(average_lifeExpectancy_continent_year, average_GDPpercapita_continent_year)
-ggplot(dataset6, aes(x = averageGDPpercapita, y = averageLifeExpectancy, group = continent, color = continent)) + geom_point()
+dataset6 <- cbind(weighted_average_lifeExpectancy_continent_year, average_GDPpercapita_continent_year)
+ggplot(dataset6, aes(x = averageGDPpercapita, y = weighted_average_LE_pop, group = continent, color = continent)) + geom_point() + ggtitle("life expectancy versus GDP per capital in each continent since \nWorld War 2") + labs(x = "GDP per capital", y = "Average Life Expectancy(weighted)")
 
 ```
-
