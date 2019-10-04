@@ -35,9 +35,8 @@ lifeExpectancy_cc <- merge(country_continent, lifeExpectancy, by = 'country')
 GDPpercapita_cc <- merge(country_continent, GDPpercapita, by = 'country')
 dataset1 <- data.frame(GDPpercapita_cc_2018 = GDPpercapita_cc$`2018`, lifeExpectancy_cc_2018 = lifeExpectancy_cc$`2018`,
                       country = GDPpercapita_cc$country, continent = GDPpercapita_cc$continent)
-#ggplot(dataset1, aes(x = GDPpercapita_cc_2018, y = lifeExpectancy_cc_2018)) + geom_point() + geom_smooth(method = 'gam', formula = y ~ sqrt(x), se = FALSE)
 
-ggplot(dataset1, aes(x = GDPpercapita_cc_2018, y = lifeExpectancy_cc_2018)) + geom_point() + facet_wrap(~ continent)  + geom_smooth(method = 'gam', formula = y ~ sqrt(x), se = FALSE)
+ggplot(dataset1, aes(x = GDPpercapita_cc_2018, y = lifeExpectancy_cc_2018)) + geom_point() + facet_wrap(~ continent)  + geom_smooth(method = 'gam', formula = y ~ sqrt(x), se = FALSE) + ggtitle("Life expectancy vary with GDP per capital in 2018 in each continent") + labs(x = "GDP per capital", y = "life expectancy")
 
 ```
 
@@ -57,7 +56,7 @@ dataset3 <- gather(lifeExpectancy_cc, key = "year", "lifeExpectancy", -c(country
 
 average_lifeExpectancy_continent_year <- dataset3 %>% filter(year >= 1939) %>% group_by(continent, year) %>% 
                                                            summarise(averageLifeExpectancy = mean(lifeExpectancy))
-ggplot(average_lifeExpectancy_continent_year, aes(x = year, y = averageLifeExpectancy, group = continent, color = continent)) + geom_line()+ scale_x_discrete(breaks = seq(1950, 2020, by = 10))
+ggplot(average_lifeExpectancy_continent_year, aes(x = year, y = averageLifeExpectancy, group = continent, color = continent)) + geom_line()+ scale_x_discrete(breaks = seq(1950, 2020, by = 10)) + ggtitle("Average life expectancy changes by years in each continent \nsince World War 2 ") + labs(x = "year", y="average life expectancy")
 ```
 
 
@@ -71,7 +70,7 @@ dataset5 <- gather(GDPpercapita_cc_upto2018, key = "year", value = "GDPpercapita
 average_GDPpercapita_continent_year <- dataset5 %>% filter(year >= 1939) %>% group_by(continent, year) %>% 
                                                            summarise(averageGDPpercapita = mean(GDPpercapita))
 dataset6 <- cbind(average_lifeExpectancy_continent_year, average_GDPpercapita_continent_year)
-ggplot(dataset6, aes(x = averageGDPpercapita, y = averageLifeExpectancy, group = continent, color = continent)) + geom_point()
+ggplot(dataset6, aes(x = averageGDPpercapita, y = averageLifeExpectancy, group = continent, color = continent)) + geom_point() + ggtitle("life expectancy versus GDP per capital in each continent since \nWorld War 2") + labs(x = "GDP per capital", y = "average life expectancy(weighted)")
 
 ```
 
