@@ -1,22 +1,12 @@
 ---
 title: "Mini_Project"
-author: "Xindi Lu"
+author: "Xindi Lu,Jingyu Xie"
 date: "October 2, 2019"
 output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-```
-
-```{r}
-
-life <- read.csv("life_expectancy_years.csv")
-
-income <- read.csv("income_per_person_gdppercapita_ppp_inflation_adjusted.csv")
-
-pop <- read.csv("population_total.csv")
-
 ```
 
 ```{r}
@@ -36,7 +26,6 @@ colnames(GDPpercapita) <- c("country", 1800:2040)
 ```
 
 ```{r echo = FALSE}
-library(gapminder)
 country_continent <- subset(gapminder, subset = year == 1952, select = c(country, continent))
 ```
 
@@ -68,7 +57,7 @@ dataset3 <- gather(lifeExpectancy_cc, key = "year", "lifeExpectancy", -c(country
 
 average_lifeExpectancy_continent_year <- dataset3 %>% filter(year >= 1939) %>% group_by(continent, year) %>% 
                                                            summarise(averageLifeExpectancy = mean(lifeExpectancy))
-ggplot(average_lifeExpectancy_continent_year, aes(x = year, y = averageLifeExpectancy, group = continent, color = continent)) + geom_line()
+ggplot(average_lifeExpectancy_continent_year, aes(x = year, y = averageLifeExpectancy, group = continent, color = continent)) + geom_line()+ scale_x_discrete(breaks = seq(1950, 2020, by = 10))
 ```
 
 
