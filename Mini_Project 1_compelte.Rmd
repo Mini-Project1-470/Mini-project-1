@@ -40,6 +40,9 @@ ggplot(dataset1, aes(x = GDPpercapita_cc_2018, y = lifeExpectancy_cc_2018)) + ge
 
 ```
 
+From the graph, we can see that the trends between life expectancy and GDP per capital could not be described as a simple liner model, instead, it maybe some complicated model. \n
+It's obvious that the pattern for every continent is different. Continents such as Africa and Oceania are quite different than others. For continents of Americas, Asia, and Europe, they tend to have a positive realtionship between life expectancy and GDP per capital, starting from around age 70. For the Africa, life expecatancy starting from 60, has a very sharp slope with GDP per capital. However, because Africa has much lower GDP values, then the curve of Africa is also shorter than other continents. For Oceania, we only get two observations, therefore, the curve may not be accurate enough to describe the relationship between life expectancy and GDP per capital in Oceania. 
+
 
 
 ## 2.Life expectancy over time by continent
